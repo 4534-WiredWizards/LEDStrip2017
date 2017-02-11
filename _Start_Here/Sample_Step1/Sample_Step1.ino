@@ -19,10 +19,10 @@ void blink (int r, int g, int b, int wait); //this is called a prototype, it tel
 
 Adafruit_NeoPixel blinky = Adafruit_NeoPixel(32, 6, NEO_GRB + NEO_KHZ800); // creates an Adafruit_NeoPixel named "blinky" 32 pixels long, on pin 6. The NEO_GRB + NEO_KHZ800 is magical stuff that the Neopixels library needs to operate.
 
-int red = 48; //these values determine the color being used.
+int red = 0; //these values determine the color being used.
 int green = 0; // these values go from 0 to 255, 0 being off and 255 being full power: Full Power is Very Bright!
-int blue = 64; //the colors combine to create a single, RGB color.
-int delayTime = 1000; //how long, in milliseconds, each frame of the animation will last.
+int blue = 24; //the colors combine to create a single, RGB color.
+int delayTime = 2000; //how long, in milliseconds, each frame of the animation will last.
 
 void setup() {
   // put your setup code here, to run once:
@@ -33,7 +33,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   blink (red, green, blue, delayTime); //blinks the led once on and off.
-  blink ((255 - red), (255 - green), (255 - blue), delayTime); //blinks in the opposite color.
+  blink ((55 - red), (155 - green), (55 - blue), delayTime); //blinks in the opposite color.
   
 }
 

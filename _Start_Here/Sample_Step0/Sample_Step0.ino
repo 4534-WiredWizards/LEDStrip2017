@@ -10,14 +10,13 @@
  */
 
 
-
 #include <Adafruit_NeoPixel.h> //adds the neopixel library to the code. This library handles the data going to the strip.
 
 Adafruit_NeoPixel blinky = Adafruit_NeoPixel(32, 6, NEO_GRB + NEO_KHZ800); // creates an LedStrip named "blinky" 32 pixels long, on pin 6. The NEO_GRB + NEO_KHZ800 is magical stuff that the Neopixels library needs to operate.
 
-int red = 48; //these values determine the color being used.
-int green = 0; // these values go from 0 to 255, 0 being off and 255 being full power: Full Power is Very Bright!
-int blue = 64; //the colors combine to create a single, RGB color.
+int red = 24; //these values determine the color being used.
+int green = 8; // these values go from 0 to 255, 0 being off and 255 being full power: Full Power is Very Bright!
+int blue = 0; //the colors combine to create a single, RGB color.
 
 void setup() {
   // put your setup code here, to run once:
@@ -40,12 +39,13 @@ void loop() {
     blinky.setPixelColor(i, red, green, blue); //paints pixel "i" according the the color values (the last three parameters in setPixelColor).
   }
   blinky.show(); //displays the changes.
-  delay(1000); //waits 1000 milliseconds.
+  delay(115); //waits 1000 milliseconds.
   for(int i = 0; i < blinky.numPixels(); i++){ //steps through each pixel
     blinky.setPixelColor(i, 0, 0, 0); //and sets them to off (black).
   }
   blinky.show();
-  delay(1000); //waits a second.
+  delay(115); //waits a second.
+
   
 }
 

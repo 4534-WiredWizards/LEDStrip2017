@@ -71,7 +71,7 @@ enum class AnimationType
   bounce,
   carnival,
   ripple,
-  groupScroll
+  groupScroll,
   stillRainbow,
   rainbowFade,
   rainbowCycle,
@@ -349,7 +349,6 @@ void LedStrip::wave (int r, int g, int b, int wait, int quantity, int magnitude)
 }
 
 void LedStrip::bounce(int r, int g, int b, int wait)
-void LedStrip::rainbowFade(byte maxBrightness, int wait)
 {
   static unsigned long timer = millis();
   unsigned int f = (millis()-timer)/wait;
@@ -405,8 +404,6 @@ void LedStrip::ripple(int r, int g, int b, byte magnitude, byte wait)
 }
 
 void LedStrip::groupScroll(int r, int g, int b, int wait, int numGroups, int groupSize) {
-void LedStrip::rainbowGroupScroll(byte brightness, int wait, int numGroups, int groupSize)
-  
   static unsigned long timer = millis();
   unsigned int f = (millis()-timer)/wait;
 
@@ -431,9 +428,93 @@ void LedStrip::rainbowGroupScroll(byte brightness, int wait, int numGroups, int 
   }
 }
 
+void LedStrip::stillRainbow(byte brightness)
+{
+  for (int i; i < this->numPixels(); i++) {
+    this->setPixelColor(i, wheelBrightness((i * 256 / this->numPixels()) & 255, brightness));
+  }
+}
 
+void LedStrip::rainbowFade(byte maxBrightness, int wait)
+{
+  static unsigned long timer = millis();
+  unsigned int f = (millis()-timer)/wait;
 
+  int res = 64;
+  int l = 0;
+  f %= ((res * 2));
+  
+  if (f % (res * 2) < res) {
+  l = f % (res);
+  } else if (f % (res * 2) >= res) {
+  l = res - (f % (res));
+  }
+  
+  for (int i; i < this->numPixels(); i++) {
+    this->setPixelColor(i, wheelBrightness((i * 256 / this->numPixels()) & 255, (maxBrightness * l) / res));
+  }
+}
 
+void LedStrip::rainbowCycle(byte brightness, int wait)
+{
+  static unsigned long timer = millis();
+  unsigned int f = (millis()-timer)/wait;
+  int s = f % 256;
+  for (int i; i < this->numPixels(); i++) {
+    this->setPixelColor(i, wheelBrightness(((i * 256 / this->numPixels()) + s) & 255, brightness));
+  }
+}
+
+void LedStrip::rainbowGroupScroll(byte brightness, int wait, int numGroups, int groupSize)
+{
+  static unsigned long timer = millis();
+  unsigned int f = (millis()-timer)/wait;
+
+  f %= this->numPixels();
+  int sum = 0;
+  int v = this->numPixels() / numGroups;
+  
+  for(uint16_t i=0; i<groupSize; i++) {
+    for(uint16_t n = 0; n < numGroups; n++) {
+      sum = (i + f) + (n * v);
+      while (sum >= this->numPixels()) {
+        sum = sum - this->numPixels();
+      }
+      this->setPixelColor(sum, wheelBrightness((sum * 256 / this->numPixels()) & 255, brightness));
+    }
+  }
+  
+  for (int n = 0; n < numGroups; n++) {
+    sum = f + (n * v);
+    sum %= this->numPixels();
+    this->setPixelColor(sum, 0, 0, 0);
+  }
+}
+
+// wheel gives an rgb color given a position on the color wheel. To use 
+uint32_t wheel(byte position) {
+  if(position < 85) {
+   return Adafruit_NeoPixel::Color(position * 3, 255 - position * 3, 0);
+  } else if(position < 170) {
+   position -= 85;
+   return Adafruit_NeoPixel::Color(255 - position * 3, 0, position * 3);
+  } else {
+   position -= 170;
+   return Adafruit_NeoPixel::Color(0, position * 3, 255 - position * 3);
+  }
+}
+
+uint32_t wheelBrightness(byte position, byte brightness) {
+  if(position < 85) {
+   return Adafruit_NeoPixel::Color((position * 3 * brightness) / 255, ((255 - position * 3) * brightness) / 255, 0);
+  } else if(position < 170) {
+   position -= 85;
+   return Adafruit_NeoPixel::Color(((255 - position * 3) * brightness) / 255, 0, (position * 3 * brightness) / 255);
+  } else {
+   position -= 170;
+   return Adafruit_NeoPixel::Color(0, (position * 3 * brightness) / 255, ((255 - position * 3) * brightness) / 255);
+  }
+}
 
 
 

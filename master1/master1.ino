@@ -25,10 +25,10 @@
 #include <Adafruit_NeoPixel.h> //adds the neopixel library to the code. This library handles the data going to the strip.
 #include "NewPing.h" //This through Newping setup is for ultrasonic sensors
 
-#define TRIGGER_RIGHT_PIN  12   // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_RIGHT_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
-#define TRIGGER_LEFT_PIN  10  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_LEFT_PIN     9  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_RIGHT_PIN  10   // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_RIGHT_PIN     9  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_LEFT_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_LEFT_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200    // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 #define WIDTH 14          // The distance between the two sensors.
 
@@ -100,27 +100,28 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-if (millis() % 50 == 0){
+if (millis() % 30 == 0){
 
   float sonarLeft = sonar2.ping_cm() /2.54;
   float sonarRight = sonar.ping_cm() /2.54;
-  if (sonarLeft == 0 || sonarRight ==0) {
-    return;
+  if (sonarLeft == 0 && sonarRight ==0) {
+    Serial.println("-999 -999 -999");
+  } else { 
+   //Serial.print("Ping:\t");
+   Serial.print(sonarRight); // Send ping, get distance in cm and print result (0 = outside set distance range)
+   Serial.print(" ");
+   Serial.print(sonarLeft);
+   Serial.print(" ");
+
+
+
+    float y = (sonarRight - sonarLeft);
+    float theta = atan2(y,WIDTH) *(180.0/3.14159265359); 
+    if (theta == 90) {
+     Serial.println(-999);
+    }
+  Serial.println(theta);
   }
-  Serial.print("Ping:\t");
-  Serial.print(sonarRight); // Send ping, get distance in cm and print result (0 = outside set distance range)
-  Serial.print(" R\t");
-  Serial.print(sonarLeft);
-  Serial.println(" L");
-
-
-
-  float y = (sonarRight - sonarLeft);
-  float theta = atan2(y,WIDTH) *(180.0/3.14159265359); 
-  if (theta == 90) {
-    return;
-  }
-    Serial.println(theta);
 }
   
   if (Serial.available() > 0) { //checks if there is anything waiting on the serial port

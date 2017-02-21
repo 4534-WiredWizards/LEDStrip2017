@@ -87,6 +87,9 @@ int blue = 0; //the colors combine to create a single, RGB color.
 unsigned long startTime = 0;
 
 char incoming; // a single character. will store the information on the serial port to be processed.
+float sonarLeft;
+float sonarRight;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -100,31 +103,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-if (millis() % 30 == 0){
-
-  float sonarLeft = sonar2.ping_cm() /2.54;
-  float sonarRight = sonar.ping_cm() /2.54;
-  if (sonarLeft == 0 && sonarRight ==0) {
-    Serial.println("-999 -999 -999");
-  } else { 
-   //Serial.print("Ping:\t");
-   Serial.print(sonarRight); // Send ping, get distance in cm and print result (0 = outside set distance range)
-   Serial.print(" ");
-   Serial.print(sonarLeft);
-   Serial.print(" ");
-
-
-
-    float y = (sonarRight - sonarLeft);
-    float theta = atan2(y,WIDTH) *(180.0/3.14159265359); 
-    if (theta == 90) {
-     Serial.println(-999);
-    }
-  Serial.println(theta);
-  }
-}
   
-  if (Serial.available() > 0) { //checks if there is anything waiting on the serial port
+  while (Serial.available() > 0) { //checks if there is anything waiting on the serial port
     incoming = Serial.read(); //reads the next thing in the serial buffer.
     switch (incoming) { 
       
@@ -179,6 +159,27 @@ if (millis() % 30 == 0){
         green = 0;
         blue = 64;
       break; //ends the case.
+
+      case '?':
+        sonarLeft = sonar2.ping_cm() /2.54;
+        sonarRight = sonar.ping_cm() /2.54;
+        if (sonarLeft == 0 || sonarRight == 0) {
+          Serial.println("-999 -999 -999");
+        } else { 
+         //Serial.print("Ping:\t");
+         Serial.print(sonarRight); // Send ping, get distance in cm and print result (0 = outside set distance range)
+         Serial.print(" ");
+         Serial.print(sonarLeft);
+         Serial.print(" ");
+          float y = (sonarRight - sonarLeft);
+          float theta = atan2(y,WIDTH) *(180.0/3.14159265359); 
+          if (theta == 90) {
+            Serial.println(-999);
+          } else {
+            Serial.println(theta);
+          }
+        }
+        break;
 
       default: // will run if incoming matches none of the above.
         //you don't need a default, but it is here when wanted.

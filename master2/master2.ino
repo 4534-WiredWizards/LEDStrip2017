@@ -57,6 +57,7 @@ class LedStrip:public Adafruit_NeoPixel { //A class is a group of other data and
     void rainbowFade(byte maxBrightness, int wait);
     void rainbowCycle(byte brightness, int wait);
     void rainbowGroupScroll(byte brightness, int wait, int numGroups, int groupSize);
+    void rainbowAlternatingFade(byte maxBrightness, int wait, int wavelength);
     //add more fun here
 };
 
@@ -75,15 +76,16 @@ enum class AnimationType
   stillRainbow,
   rainbowFade,
   rainbowCycle,
-  rainbowGroupScroll
+  rainbowGroupScroll,
+  rainbowAlternatingFade
 }; //Creates a list of our animations.
-AnimationType animationID = AnimationType::solidColor; //creates animationID, which will store what animation we are running, and sets it to solidColor.
+AnimationType animationID = AnimationType::rainbowGroupScroll; //creates animationID, which will store what animation we are running, and sets it to solidColor.
 
 
-LedStrip inky = LedStrip(90, 3, NEO_GRB + NEO_KHZ800); // creates an LedStrip named "inky" 32 pixels long, on pin 6. The NEO_GRB + NEO_KHZ800 is magical stuff that the Neopixels library needs to operate.
-LedStrip blinky = LedStrip(90, 4, NEO_GRB + NEO_KHZ800); // creates an LedStrip named "blinky" 32 pixels long, on pin 6. The NEO_GRB + NEO_KHZ800 is magical stuff that the Neopixels library needs to operate.
-LedStrip pinky = LedStrip(60, 5, NEO_GRB + NEO_KHZ800); // creates an LedStrip named "pinky" 32 pixels long, on pin 6. The NEO_GRB + NEO_KHZ800 is magical stuff that the Neopixels library needs to operate.
-LedStrip clyde = LedStrip(60, 6, NEO_GRB + NEO_KHZ800); // creates an LedStrip named "clyde" 32 pixels long, on pin 6. The NEO_GRB + NEO_KHZ800 is magical stuff that the Neopixels library needs to operate.
+LedStrip inky = LedStrip(92, 3, NEO_GRB + NEO_KHZ800); // climber front.
+LedStrip blinky = LedStrip(83, 4, NEO_GRB + NEO_KHZ800); // shooter front.
+LedStrip pinky = LedStrip(51, 5, NEO_GRB + NEO_KHZ800); // climber back.
+LedStrip clyde = LedStrip(40, 6, NEO_GRB + NEO_KHZ800); // shooter back.
 
 int red = 126; //global color values. Passed to most animations.
 int green = 42; // these values go from 0 to 255, 0 being off and 255 being full power: Full Power is Very Bright!
@@ -197,6 +199,12 @@ void loop() {
         blue = 127;
         break;
 
+      case 'V':
+        red = 127;
+        green = 0;
+        blue = 127;
+        break;
+
       case '1': 
         animationID = AnimationType::stillRainbow;
       break;
@@ -211,6 +219,10 @@ void loop() {
 
       case '4': 
         animationID = AnimationType::rainbowGroupScroll;
+      break;
+
+      case '5': 
+        animationID = AnimationType::rainbowAlternatingFade;
       break;
 
       case '?':
@@ -265,17 +277,17 @@ void loop() {
       break;
 
     case AnimationType::alternatingFade:
-      inky.alternatingFade(red, green, blue, 5, 3);
-      blinky.alternatingFade(red, green, blue, 5, 3);
-      pinky.alternatingFade(red, green, blue, 5, 3);
-      clyde.alternatingFade(red, green, blue, 5, 3);
+      inky.alternatingFade(red, green, blue, 3, 3);
+      blinky.alternatingFade(red, green, blue, 3, 3);
+      pinky.alternatingFade(red, green, blue, 3, 3);
+      clyde.alternatingFade(red, green, blue, 3, 3);
       break;
 
     case AnimationType::wave:
-      inky.wave(red, green, blue, 20, 5, 6);
-      blinky.wave(red, green, blue, 20, 5, 6);
-      pinky.wave(red, green, blue, 20, 5, 6);
-      clyde.wave(red, green, blue, 20, 5, 6);
+      inky.wave(red, green, blue, 20, 5, 10);
+      blinky.wave(red, green, blue, 20, 5, 10);
+      pinky.wave(red, green, blue, 20, 5, 7);
+      clyde.wave(red, green, blue, 20, 5, 7);
       break;
 
     case AnimationType::bounce:
@@ -307,10 +319,10 @@ void loop() {
       break;
 
     case AnimationType::groupScroll:
-      inky.groupScroll(red, green, blue, 30, 10, 14);
-      blinky.groupScroll(red, green, blue, 30, 10, 14);
-      pinky.groupScroll(red, green, blue, 30, 10, 14);
-      clyde.groupScroll(red, green, blue, 30, 10, 14);
+      inky.groupScroll(red, green, blue, 30, 10, 5);
+      blinky.groupScroll(red, green, blue, 30, 10, 5);
+      pinky.groupScroll(red, green, blue, 30, 6, 5);
+      clyde.groupScroll(red, green, blue, 30, 6, 5);
       break;
 
     case AnimationType::stillRainbow:
@@ -335,10 +347,17 @@ void loop() {
       break;
     
     case AnimationType::rainbowGroupScroll:
-      inky.rainbowGroupScroll(255, 20, 18, 14);
-      blinky.rainbowGroupScroll(255, 20, 18, 14);
-      pinky.rainbowGroupScroll(255, 20, 18, 14);
-      clyde.rainbowGroupScroll(255, 20, 18, 14);
+      inky.rainbowGroupScroll(255, 20, 10, 5);
+      blinky.rainbowGroupScroll(255, 20, 10, 5);
+      pinky.rainbowGroupScroll(255, 20, 6, 5);
+      clyde.rainbowGroupScroll(255, 20, 6, 5);
+      break;
+
+    case AnimationType::rainbowAlternatingFade:
+      inky.rainbowAlternatingFade(255, 2, 4);
+      blinky.rainbowAlternatingFade(255, 2, 4);
+      pinky.rainbowAlternatingFade(255, 2, 4);
+      clyde.rainbowAlternatingFade(255, 2, 4);
       break;
     
     default: // will run if icoming matches none of the above.
@@ -590,6 +609,28 @@ void LedStrip::rainbowGroupScroll(byte brightness, int wait, int numGroups, int 
     sum %= this->numPixels();
     this->setPixelColor(sum, 0, 0, 0);
   }
+}
+
+void LedStrip::rainbowAlternatingFade(byte maxBrightness, int wait, int wavelength)
+{
+  static unsigned long timer = millis();
+  unsigned int f = (millis()-timer)/wait;
+  int res = 64;
+  int l = 0;
+  f %= ((res * 2) * wavelength);
+  int s = f / (res * 2);
+  s %= wavelength;
+  
+  if (f % (res * 2) < res) {
+  l = f % (res);
+  } else if (f % (res * 2) >= res) {
+  l = res - (f % (res));
+  }
+
+  for (int i = s; i < this->numPixels(); i += wavelength){
+    this->setPixelColor(i, wheelBrightness((i * 256 / this->numPixels()) & 255, (maxBrightness * l) / res));
+  }
+  this->show();
 }
 
 // wheel gives an rgb color given a position on the color wheel. To use 

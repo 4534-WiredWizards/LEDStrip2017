@@ -84,7 +84,7 @@ AnimationType animationID = AnimationType::rainbowGroupScroll; //creates animati
 
 LedStrip inky = LedStrip(92, 3, NEO_GRB + NEO_KHZ800); // climber front.
 LedStrip blinky = LedStrip(83, 4, NEO_GRB + NEO_KHZ800); // shooter front.
-LedStrip pinky = LedStrip(51, 5, NEO_GRB + NEO_KHZ800); // climber back.
+LedStrip pinky = LedStrip(41, 5, NEO_GRB + NEO_KHZ800); // climber back.
 LedStrip clyde = LedStrip(40, 6, NEO_GRB + NEO_KHZ800); // shooter back.
 
 int red = 126; //global color values. Passed to most animations.
@@ -118,7 +118,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
   while (Serial.available() > 0) { //checks if there is anything waiting on the serial port
     incoming = Serial.read(); //reads the next thing in the serial buffer.
     switch (incoming) { 

@@ -227,20 +227,33 @@ void loop() {
       case '?':
         sonarLeft = sonar2.ping_cm() /2.54;
         sonarRight = sonar.ping_cm() /2.54;
-        if (sonarLeft == 0 || sonarRight == 0) {
-          Serial.println("-999 -999 -999");
-        } else { 
-         //Serial.print("Ping:\t");
-         Serial.print(sonarRight); // Send ping, get distance in cm and print result (0 = outside set distance range)
-         Serial.print(" ");
-         Serial.print(sonarLeft);
-         Serial.print(" ");
-          float y = (sonarRight - sonarLeft);
-          float theta = atan2(y,WIDTH) *(180.0/3.14159265359); 
-          if (theta == 90) {
-            Serial.println(-999);
+        if (sonarLeft == 0 && sonarRight == 0) {
+          Serial.println("-555 -555 -555");
+        } else {
+          bool hasBrokenSensor = false;
+          if (sonarLeft == 0) {
+            sonarLeft = sonarRight;
+            hasBrokenSensor = true;
+          }
+          if (sonarRight == 0) {
+            sonarRight = sonarLeft;
+            hasBrokenSensor = true;
+          }
+          //Serial.print("Ping:\t");
+          Serial.print(sonarRight); // Send ping, get distance in cm and print result (0 = outside set distance range)
+          Serial.print(" ");
+          Serial.print(sonarLeft);
+          Serial.print(" ");
+          if (hasBrokenSensor == true) {
+            Serial.println("-777");
           } else {
-            Serial.println(theta);
+            float y = (sonarRight - sonarLeft);
+            float theta = atan2(y,WIDTH) *(180.0/3.14159265359); 
+            if (theta == 90) {
+              Serial.println("-999");
+            } else {
+              Serial.println(theta);
+            }
           }
         }
         break;

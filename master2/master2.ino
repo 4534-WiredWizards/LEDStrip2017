@@ -324,10 +324,10 @@ void loop() {
       break;
 
     case AnimationType::blink:
-      inky.blink(red, green, blue, 500);
-      blinky.blink(red, green, blue, 500);
-      pinky.blink(red, green, blue, 500);
-      clyde.blink(red, green, blue, 500);
+      inky.blink(red, green, blue, 100);
+      blinky.blink(red, green, blue, 100);
+      pinky.blink(red, green, blue, 100);
+      clyde.blink(red, green, blue, 100);
       break;
 
     case AnimationType::groupScroll:
@@ -366,10 +366,10 @@ void loop() {
       break;
 
     case AnimationType::rainbowAlternatingFade:
-      inky.rainbowAlternatingFade(255, 2, 4);
-      blinky.rainbowAlternatingFade(255, 2, 4);
-      pinky.rainbowAlternatingFade(255, 2, 4);
-      clyde.rainbowAlternatingFade(255, 2, 4);
+      inky.rainbowAlternatingFade(255, 4, 4);
+      blinky.rainbowAlternatingFade(255, 4, 4);
+      pinky.rainbowAlternatingFade(255, 4, 4);
+      clyde.rainbowAlternatingFade(255, 4, 4);
       break;
     
     default: // will run if icoming matches none of the above.

@@ -87,9 +87,9 @@ LedStrip blinky = LedStrip(83, 4, NEO_GRB + NEO_KHZ800); // shooter front.
 LedStrip pinky = LedStrip(41, 5, NEO_GRB + NEO_KHZ800); // climber back.
 LedStrip clyde = LedStrip(40, 6, NEO_GRB + NEO_KHZ800); // shooter back.
 
-int red = 126; //global color values. Passed to most animations.
+int red = 42; //global color values. Passed to most animations.
 int green = 42; // these values go from 0 to 255, 0 being off and 255 being full power: Full Power is Very Bright!
-int blue = 0; //the colors combine to create a single, RGB color.
+int blue = 42; //the colors combine to create a single, RGB color.
 unsigned long startTime = 0;
 
 char incoming; // a single character. will store the information on the serial port to be processed.

@@ -34,7 +34,8 @@ class LedStrip:public Adafruit_NeoPixel { //A class is a group of other data and
   protected:
     // protected members can only be accessed by this class or other classes that inherit it.
   public: //public members are accessible by the whole code.
-    LedStrip(int pixels, int pin, int options); //this function sets up the led strip accoring to the NeoPixel library.
+    LedStrip(int pixels, int pin, int options, bool isReversed); //this function sets up the led strip accoring to the NeoPixel library.
+    bool isReversed;
     void solidColor(int r, int g, int b); // these are functions for animations. 
     void blink(int r, int g, int b, int wait);
     void blackout();
@@ -74,10 +75,10 @@ enum class AnimationType
 AnimationType animationID = AnimationType::rainbowGroupScroll; //creates animationID, which will store what animation we are running, and sets it to rainbowGroupScroll.
 
 
-LedStrip inky = LedStrip(92, 3, NEO_GRB + NEO_KHZ800); // climber front.
-LedStrip blinky = LedStrip(83, 4, NEO_GRB + NEO_KHZ800); // shooter front.
-LedStrip pinky = LedStrip(41, 5, NEO_GRB + NEO_KHZ800); // climber back.
-LedStrip clyde = LedStrip(40, 6, NEO_GRB + NEO_KHZ800); // shooter back.
+LedStrip inky = LedStrip(92, 3, NEO_GRB + NEO_KHZ800, false); // climber front.
+LedStrip blinky = LedStrip(83, 4, NEO_GRB + NEO_KHZ800, false); // shooter front.
+LedStrip pinky = LedStrip(41, 5, NEO_GRB + NEO_KHZ800, false); // climber back.
+LedStrip clyde = LedStrip(40, 6, NEO_GRB + NEO_KHZ800, true); // shooter back.
 
 int red = 42; //global color values. Passed to most animations. (The exception is for rainbows)
 int green = 42; // these values go from 0 to 255, 0 being off and 255 being full power: Full Power is Very Bright!
@@ -375,10 +376,11 @@ void loop() {
   
 }
 
-// Put your other Functions here, so the 
+// Put your other Functions here, so they don't get in the way of the rest of your code.
 
-LedStrip::LedStrip(int pixels, int pin, int options): Adafruit_NeoPixel(pixels, pin, options) //initializes the ledStrip.
+LedStrip::LedStrip(int pixels, int pin, int options, bool isReversed): Adafruit_NeoPixel(pixels, pin, options) //initializes the ledStrip.
 {
+  this->isReversed = isReversed;
 }
 
 void LedStrip::blackout(){ //clears all of the pixels on the strip. NOTE: the Neopixel library's strip.clear() function should do the same.
@@ -446,7 +448,11 @@ void LedStrip::alternatingFade(int r,int g,int b, int wait, int wavelength)
   }
 
   for (int i = s; i < this->numPixels(); i += wavelength){
-    this->setPixelColor(i, this->Color((l*r)/res,(l*g)/res,(l*b)/res));
+    if(this->isReversed) {
+      this->setPixelColor(this->numPixels()-1 - i, this->Color((l*r)/res,(l*g)/res,(l*b)/res));
+    } else {
+      this->setPixelColor(i, this->Color((l*r)/res,(l*g)/res,(l*b)/res));
+    }
   }
   this->show();
 }
@@ -462,9 +468,11 @@ void LedStrip::wave (int r, int g, int b, int wait, int quantity, int magnitude)
   
   for(int w = (s % p); w < (this->numPixels() + (magnitude * 2)); w += p){
     for (int i = 0; i <= magnitude; i++){
-      
-      this->setPixelColor(((i+w) - (magnitude * 2)), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
-      
+      if(this->isReversed) {
+        this->setPixelColor(this->numPixels()-1 - ((i+w) - (magnitude * 2)), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+      } else {
+        this->setPixelColor(((i+w) - (magnitude * 2)), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+      }
     }
     for (int i = magnitude; i >= 0; i--) {
       
@@ -481,19 +489,21 @@ void LedStrip::bounce(int r, int g, int b, int wait)
   f %= ((this->numPixels() * 2) - 1);
 
   if (f <= this->numPixels()) {
-    this->setPixelColor(f,this->Color(r,g,b));
-    this->setPixelColor(f - 1,this->Color(0,0,0));
-    this->setPixelColor(f - 2,this->Color(0,0,0));
-    
+    if(this->isReversed) {
+      this->setPixelColor(this->numPixels()-1 - f,this->Color(r,g,b));
+      this->setPixelColor(this->numPixels() - (f - 1),this->Color(0,0,0));
+      this->setPixelColor(this->numPixels()-1 - (f - 2),this->Color(0,0,0));
+    } else {
+      this->setPixelColor(f,this->Color(r,g,b));
+      this->setPixelColor(f - 1,this->Color(0,0,0));
+      this->setPixelColor(f - 2,this->Color(0,0,0));
+    }
   }
 
   if (f > this->numPixels()){
-    this->setPixelColor((this->numPixels() * 2) - f, this->Color(r,g,b));
-    this->setPixelColor((this->numPixels() * 2) - f + 1, this->Color(0,0,0));
-    this->setPixelColor((this->numPixels() * 2) - f + 2, this->Color(0,0,0));
-  }
-  if (f > (this->numPixels() * 2) - 1) {
-    
+    this->setPixelColor(this->numPixels()-1 - ((this->numPixels() * 2) - f), this->Color(r,g,b));
+    this->setPixelColor(this->numPixels()-1 - ((this->numPixels() * 2) - f + 1), this->Color(0,0,0));
+    this->setPixelColor(this->numPixels()-1 - ((this->numPixels() * 2) - f + 2), this->Color(0,0,0));
   }
 }
 
@@ -503,8 +513,13 @@ void LedStrip::carnival(int r,int g,int b, int wait)
   unsigned int f = (millis()-timer)/wait;
   int c = f % 3;
   for(int i = 0; i < this->numPixels() + 1; i+=3){
-    this->setPixelColor(i+c, this->Color(r,g,b));
-    this->setPixelColor(i+c-1, this->Color(0,0,0));
+    if(this->isReversed) {
+      this->setPixelColor(this->numPixels()-1 - (i+c), this->Color(r,g,b));
+      this->setPixelColor(this->numPixels()-1 - (i+c-1), this->Color(0,0,0));
+    } else {
+      this->setPixelColor(i+c, this->Color(r,g,b));
+      this->setPixelColor(i+c-1, this->Color(0,0,0));
+    }
   }
 }
 
@@ -518,12 +533,20 @@ void LedStrip::ripple(int r, int g, int b, byte magnitude, byte wait)
   for (int p = 0; p < this->numPixels() + (2 * magnitude) - 2; p += (2*magnitude)) {
     for (int i = 0; i < magnitude; i++){
       if ((p+i-s) >= 0 && p+i-s < this->numPixels()){
-        this->setPixelColor(p+i-s, this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+        if (this->isReversed) {
+          this->setPixelColor(this->numPixels()-1 - (p+i-s), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+        } else {
+          this->setPixelColor(p+i-s, this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+        }
       }
     }
     for (int i = magnitude; i > 0; i--) {
       if ((p-s+((magnitude * 2) - i)) >= 0 && (p-s+((magnitude * 2) - i)) < this->numPixels()){
-        this->setPixelColor((p-s+((magnitude * 2) - i)), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+        if(this->isReversed) {
+          this->setPixelColor(this->numPixels()-1 - (p-s+((magnitude * 2) - i)), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+        } else {
+          this->setPixelColor((p-s+((magnitude * 2) - i)), this->Color((i*r)/magnitude, (i*g)/magnitude, (i*b)/magnitude));
+        }
       }
     }
   }
@@ -543,14 +566,22 @@ void LedStrip::groupScroll(int r, int g, int b, int wait, int numGroups, int gro
       while (sum >= this->numPixels()) {
         sum = sum - this->numPixels();
       }
-      this->setPixelColor(sum, r, g, b);
+      if (this->isReversed) {
+        this->setPixelColor(this->numPixels()-1 - sum, r, g, b);
+      } else {
+        this->setPixelColor(sum, r, g, b);
+      }
     }
   }
   
   for (int n = 0; n < numGroups; n++) {
     sum = f + (n * v);
     sum %= this->numPixels();
-    this->setPixelColor(sum, 0, 0, 0);
+    if (this->isReversed) {
+      this->setPixelColor(this->numPixels()-1 - sum, 0, 0, 0);
+    } else {
+      this->setPixelColor(sum, 0, 0, 0);
+    }
   }
 }
 
@@ -587,7 +618,11 @@ void LedStrip::rainbowCycle(byte brightness, int wait)
   unsigned int f = (millis()-timer)/wait;
   int s = f % 256;
   for (int i; i < this->numPixels(); i++) {
-    this->setPixelColor(i, wheelBrightness(((i * 256 / this->numPixels()) + s) & 255, brightness));
+    if (this->isReversed) {
+      this->setPixelColor(this-numPixels()-1 - i, wheelBrightness(((i * 256 / this->numPixels()) + s) & 255, brightness));
+    } else {
+      this->setPixelColor(i, wheelBrightness(((i * 256 / this->numPixels()) + s) & 255, brightness));
+    }
   }
 }
 
@@ -606,14 +641,22 @@ void LedStrip::rainbowGroupScroll(byte brightness, int wait, int numGroups, int 
       while (sum >= this->numPixels()) {
         sum = sum - this->numPixels();
       }
-      this->setPixelColor(sum, wheelBrightness((sum * 256 / this->numPixels()) & 255, brightness));
+      if (this->isReversed) {
+        this->setPixelColor(this->numPixels()-1 - sum, wheelBrightness((sum * 256 / this->numPixels()) & 255, brightness));
+      } else {
+        this->setPixelColor(sum, wheelBrightness((sum * 256 / this->numPixels()) & 255, brightness));
+      }
     }
   }
   
   for (int n = 0; n < numGroups; n++) {
     sum = f + (n * v);
     sum %= this->numPixels();
-    this->setPixelColor(sum, 0, 0, 0);
+    if (this->isReversed) {
+      this->setPixelColor(this->numPixels()-1 - sum, 0, 0, 0);
+    } else {
+      this->setPixelColor(sum, 0, 0, 0);
+    }
   }
 }
 
@@ -634,7 +677,11 @@ void LedStrip::rainbowAlternatingFade(byte maxBrightness, int wait, int waveleng
   }
 
   for (int i = s; i < this->numPixels(); i += wavelength){
-    this->setPixelColor(i, wheelBrightness((i * 256 / this->numPixels()) & 255, (maxBrightness * l) / res));
+    if (this->isReversed) {
+      this->setPixelColor(this->numPixels()-1 - i, wheelBrightness((i * 256 / this->numPixels()) & 255, (maxBrightness * l) / res));
+    } else {
+      this->setPixelColor(i, wheelBrightness((i * 256 / this->numPixels()) & 255, (maxBrightness * l) / res));
+    }
   }
   this->show();
 }
